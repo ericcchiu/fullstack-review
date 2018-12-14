@@ -10,12 +10,17 @@ class App extends React.Component {
     this.state = { 
       repos: []
     }
-
   }
 
   search (term) {
-    console.log(`${term} was searched`);
-    // TODO
+    console.log(`APP COMPONENT: ${term} was searched`);
+    console.log(term);
+    const githubHandler = { 
+      handler: term
+    }
+    $.post('/repos', githubHandler)
+    .done(() => console.log('Successfully searched for the github user'))
+    .fail((err) => console.log('Failure making a post request to obtain handler repos', err)); 
   }
 
   render () {
