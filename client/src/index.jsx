@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import Search from './components/Search.jsx';
-import RepoList from './components/RepoList.jsx';
+import RepoCount from './components/RepoCount.jsx';
+import List from './components/List.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -19,15 +20,37 @@ class App extends React.Component {
       handler: term
     }
     $.post('/repos', githubHandler)
-    .done(() => console.log('Successfully searched for the github user'))
+    .done((gitHubObj) => {
+      console.log('Successfully searched for the github user', gitHubObj);
+      this.setState({
+        repos: gitHubObj
+      })
+    })
     .fail((err) => console.log('Failure making a post request to obtain handler repos', err)); 
   }
 
+  componentDidMount () { 
+    $.get('/repos')
+    .done((reposArr) => { 
+      let parsedRepos = JSON.parse(reposArr);
+      this.setState({
+        repos: parsedRepos
+      });
+    })
+    .fail((err) => {
+      console.log('Error making a get request to server', err); 
+    })
+  }
+
   render () {
-    return (<div>
+    console.log('OUR REPOS', this.state.repos)
+
+    return (
+    <div>
       <h1>Github Fetcher</h1>
-      <RepoList repos={this.state.repos}/>
+      <RepoCount repos={this.state.repos}/>
       <Search onSearch={this.search.bind(this)}/>
+      <List repos={this.state.repos}/>
     </div>)
   }
 }
